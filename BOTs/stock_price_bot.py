@@ -4,7 +4,27 @@ import yfinance as yf
 
 
 def get_stock_price():
-    return 2+2
+    stock_price = symbol_entry.get()
+
+    if not stock_price:
+        messagebox.showwarning("Input Error","Please enter a stock symbol")
+        return
+    
+    try:
+        #fetching stock data from yfinance
+        stock = yf.Ticker(stock_symbol)
+        stock_info = stock.history(period = "1d")
+
+        # Checking Data Availability
+        if stock_info.empty:
+            messagebox.showerror(""Error", "Could not retrieve stock data. Please check the symbol.")")
+            return
+        
+        # Getting latest stock price
+        stock_price = stock_info['CLose'].iloc[0]
+
+        # Updating the label with stock price
+        price_label.config(text=f""Current price of {stock_symbol.upper()} is ${stock_price:.2f}")
 
 
 root = tk.Tk()
