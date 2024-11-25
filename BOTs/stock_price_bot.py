@@ -4,9 +4,9 @@ import yfinance as yf
 
 
 def get_stock_price():
-    stock_price = symbol_entry.get()
+    stock_symbol = symbol_entry.get()
 
-    if not stock_price:
+    if not stock_symbol:
         messagebox.showwarning("Input Error","Please enter a stock symbol")
         return
     
@@ -17,14 +17,20 @@ def get_stock_price():
 
         # Checking Data Availability
         if stock_info.empty:
-            messagebox.showerror(""Error", "Could not retrieve stock data. Please check the symbol.")")
+            # messagebox.showerror(""Error", "Could not retrieve stock data. Please check the symbol.")")
+            messagebox.showerror("Error", "Could not retrieve stock data. Please check the symbol.")
+
             return
         
         # Getting latest stock price
-        stock_price = stock_info['CLose'].iloc[0]
+        stock_price = stock_info['Close'].iloc[0]
 
         # Updating the label with stock price
-        price_label.config(text=f""Current price of {stock_symbol.upper()} is ${stock_price:.2f}")
+        # price_label.config(text=f""Current price of {stock_symbol.upper()} is ${stock_price:.f}")
+        price_label.config(text=f"Current price of {stock_symbol.upper()} is ${stock_price:.2f}")
+    
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
 
 root = tk.Tk()
