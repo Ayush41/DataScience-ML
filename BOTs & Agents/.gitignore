@@ -1,0 +1,4 @@
+crew_agents_env/
+
+# py -m venv myenv
+# crew_agents_env\Scripts\activate
