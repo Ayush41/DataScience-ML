@@ -25,3 +25,4 @@ if uploaded_file:
         # Display results
         st.subheader("Analysis Result:")
         st.write(result)
+    

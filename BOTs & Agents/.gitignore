@@ -1,4 +1,6 @@
 crew_agents_env/
 
-# py -m venv myenv
-# crew_agents_env\Scripts\activate
+# creating venv --> py -m venv myenv
+# To Activate Venv--> crew_agents_env\Scripts\activate
+
+#To check installation--> pip freeze | grep crewai
