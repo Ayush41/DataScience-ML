@@ -1,0 +1,13 @@
+streamlit
+crewai
+autogen
+google-generativeai
+langchain-core
+langchain-community
+python-dotenv
+# elevenlabs
+requests
+beautifulsoup4  # For HTML parsing if needed
+apscheduler    # For scheduling daily job searches
+python-multipart  # For Streamlit file uploads
+PyPDF2
