@@ -17,44 +17,6 @@
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.13.0/dist/tf.min.js"></script>
-    <script src="script.js">
-    const loginForm = document.getElementById('login-form');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-
-loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    try {
-        const username = usernameInput.value.trim();
-        if (!username) {
-            throw new Error("Username is required.");
-        }
-
-        try {
-            // Replace with your actual Llama model credentials
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (response.ok) {
-                console.log('Login successful!');
-                location.reload();
-            } else {
-                throw new Error(`Invalid username or password`);
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error occurred while processing your request');
-        }
-    } catch (error) {
-        console.error(error);
-        alert('Chat connection failed. Please try again.');
-    }
-});
-
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
