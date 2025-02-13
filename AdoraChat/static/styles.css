@@ -1,0 +1,39 @@
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    padding: 100px 0;
+}
+
+/* Features Section */
+.features-section .card {
+    transition: transform 0.3s;
+}
+
+.features-section .card:hover {
+    transform: translateY(-10px);
+}
+
+/* Pricing Section */
+.pricing-section .card-header {
+    padding: 20px;
+}
+
+.pricing-section .card {
+    transition: transform 0.3s;
+}
+
+.pricing-section .card:hover {
+    transform: translateY(-10px);
+}
+
+/* Testimonials Section */
+.testimonials-section .card {
+    background: #f8f9fa;
+    border: none;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    padding: 80px 0;
+}
