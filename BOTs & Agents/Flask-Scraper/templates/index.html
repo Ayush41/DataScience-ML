@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Job Search and Resume Analyzer</h1>
+    
+    <div id="search-section">
+        <h2>Search Jobs</h2>
+        <form id="search-form">
+            <div class="form-group">
+                <label>Job Title:</label>
+                <input type="text" name="title" placeholder="e.g., Python Developer">
+            </div>
+            <div class="form-group">
+                <label>Location:</label>
+                <input type="text" name="location" placeholder="e.g., Remote">
+            </div>
+            <div class="form-group">
+                <label>Minimum Experience (years):</label>
+                <input type="number" name="experience" min="0">
+            </div>
+            <button type="submit">Search Jobs</button>
+        </form>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="analyze-section" style="margin-top: 30px;">
+        <h2>Resume Analyzer</h2>
+        <form id="analyze-form">
+            <div class="form-group">
+                <label>Paste Your Resume:</label>
+                <textarea name="resume" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Paste Job Description:</label>
+                <textarea name="job_description" rows="5" required></textarea>
+            </div>
+            <button type="submit">Analyze Resume</button>
+        </form>
+        <div id="analysis-result"></div>
+    </div>
+
+    <script>
+        $('#search-form').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/search',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    let html = '<h3>Job Results:</h3>';
+                    response.jobs.forEach(job => {
+                        html += `
+                            <div class="job-card">
+                                <h4>${job.title}</h4>
+                                <p>Company: ${job.company}</p>
+                                <p>Location: ${job.location}</p>
+                                <p>Salary: ${job.salary}</p>
+                                <p>Experience: ${job.experience}</p>
+                                <p>${job.description}</p>
+                            </div>`;
+                    });
+                    $('#results').html(html);
+                }
+            });
+        });
+
+        $('#analyze-form').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/analyze',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    let html = `
+                        <h3>Analysis Result:</h3>
+                        <p>Match Score: ${response.score}%</p>
+                        <p>Feedback: ${response.comment}</p>
+                    `;
+                    $('#analysis-result').html(html);
+                }
+            });
+        });
+    </script>
+{% endblock %}
