@@ -1,0 +1,130 @@
+{
+  "name": "Job Application Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "expression": "*/12"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.linkedin.com/v2/jobSearch?keywords={{$json[\"keywords\"]}}&location={{$json[\"location\"]}}&start={{$json[\"start\"]}}&count={{$json[\"count\"]}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "LinkedIn Job Search API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.indeed.com/v2/jobsearch?q={{$json[\"keywords\"]}}&l={{$json[\"location\"]}}&start={{$json[\"start\"]}}&limit={{$json[\"count\"]}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Indeed Job Search API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        450,
+        450
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get data from both APIs\nconst linkedinJobs = $input.item(0).json.jobs || [];\nconst indeedJobs = $input.item(1).json.results || [];\n\n// Function to standardize job data format\nfunction standardizeJobData(job, source) {\n  if (source === 'linkedin') {\n    return {\n      id: job.id,\n      title: job.title,\n      company: job.company.name,\n      location: job.location.name,\n      description: job.description,\n      url: job.permalink,\n      date_posted: job.posted_time,\n      source: 'LinkedIn'\n    };\n  } else {\n    return {\n      id: job.jobkey,\n      title: job.jobtitle,\n      company: job.company,\n      location: job.formattedLocation,\n      description: job.snippet,\n      url: job.url,\n      date_posted: job.date,\n      source: 'Indeed'\n    };\n  }\n}\n\n// Process LinkedIn jobs\nconst standardizedLinkedinJobs = linkedinJobs.map(job => standardizeJobData(job, 'linkedin'));\n\n// Process Indeed jobs\nconst standardizedIndeedJobs = indeedJobs.map(job => standardizeJobData(job, 'indeed'));\n\n// Combine all jobs\nconst allJobs = [...standardizedLinkedinJobs, ...standardizedIndeedJobs];\n\nreturn {json: allJobs};"
+      },
+      "name": "Process Job Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/job_preferences?user_id=eq.{{$json[\"user_id\"]}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get User Job Preferences",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.GROQ_API_ENDPOINT}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "requestBody": "={\n  \"model\": \"llama3-70b-8192\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an AI assistant that evaluates job listings based on user preferences and skills. Your task is to analyze job descriptions and determine if they are a good match for the user.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Here is the job description:\\n\\n{{$json[\"description\"]}}\\n\\nHere are my preferences and skills:\\n\\nPreferred job titles: {{$json[\"user_preferences\"][\"preferred_job_titles\"]}}\\nPreferred locations: {{$json[\"user_preferences\"][\"preferred_locations\"]}}\\nMinimum salary: {{$json[\"user_preferences\"][\"minimum_salary\"]}}\\nSkills: {{$json[\"user_preferences\"][\"skills\"]}}\\n\\nEvaluate if this job is a good match for me based on my preferences and skills. Return a JSON object with fields: match_score (0-100), reasons_for_match, reasons_against_match, and should_apply (boolean).\"\n    }\n  ],\n  \"max_tokens\": 1024\n}"
+      },
+      "name": "Evaluate Job Match",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json[\"match_score\"]}}",
+              "operation": "larger",
+              "value2": 70
+            }
+          ],
+          "boolean": [
+            {
+              "value1": "={{$json[\"should_apply\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Is Good Match?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.GROQ_API_ENDPOINT}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "requestBody":
