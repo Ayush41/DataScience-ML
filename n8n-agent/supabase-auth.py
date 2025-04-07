@@ -10,6 +10,13 @@ supabase_key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(supabase_url, supabase_key)
 
 
+# def sign_up(email, password):
+#     try:
+#         user = supabase.auth.sign_up({"email": email, "password": password})
+#         return user
+#     except Exception as e:
+#         st.error(f"Registration failed: {e}")
+
 def sign_up(email, password):
     try:
         user = supabase.auth.sign_up({"email": email, "password": password})
@@ -17,7 +24,26 @@ def sign_up(email, password):
     except Exception as e:
         st.error(f"Registration failed: {e}")
 
+def sign_in(email, password):
+    try:
+        user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        return user
+    except Exception as e:
+        st.error(f"Login failed: {e}")
 
+def sign_out():
+    try:
+        supabase.auth.sign_out()
+        st.session_state.user_email = None
+        st.rerun()
+    except Exception as e:
+        st.error(f"Logout failed: {e}")
+
+def main_app(user_email):
+    st.title("🎉 Welcome Page")
+    st.success(f"Welcome, {user_email}! 👋")
+    if st.button("Logout"):
+        sign_out()
 
 def auth_screen():
     st.title("🔐 Streamlit & Supabase Auth App")
