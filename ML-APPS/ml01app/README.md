@@ -31,3 +31,9 @@ bash
 Copy
 Edit
 flutter run -d chrome
+
+
+## DEMO APP
+![Login](image.png)
+
+![Navbar](image-1.png)
