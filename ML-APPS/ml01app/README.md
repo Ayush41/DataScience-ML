@@ -35,5 +35,7 @@ flutter run -d chrome
 
 ## DEMO APP
 ![Login](image.png)
+![Screenshot 2025-04-24 211458](https://github.com/user-attachments/assets/103d8dea-091a-4f4a-a2c3-060a81450df8)
 
 ![Navbar](image-1.png)
+![Screenshot 2025-04-24 211649](https://github.com/user-attachments/assets/379544ca-3118-4859-8490-ed85b79a9929)
